@@ -30,14 +30,20 @@ const PostListPage = () => {
 
   return (
     <StyledPostList>
-      <ol className="post-list">
+      <StyledOrderedList>
         {posts &&
-          posts.map((post) => (
-            <li key={`post-${post._id}`}>
-              <Link to={`/post/${post._id}`}>{post.name}</Link>
-            </li>
+          posts.map((post, idx) => (
+            <StyledPostLi key={`post-${post._id}`}>
+              <StyledPostLink to={`/post/${post._id}`}>
+                {idx + 1}. {post.name}
+              </StyledPostLink>
+              <div>
+                <StyledPostLink to={`/post/update/${post._id}`}>update</StyledPostLink>
+                <StyledPostButton>Delete</StyledPostButton>
+              </div>
+            </StyledPostLi>
           ))}
-      </ol>
+      </StyledOrderedList>
     </StyledPostList>
   );
 };
@@ -47,3 +53,20 @@ export default PostListPage;
 const StyledPostList = styled.div`
   margin: 20px;
 `;
+
+const StyledOrderedList = styled.ol`
+  list-style: none;
+`;
+
+const StyledPostLi = styled.li`
+  width: 400px;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const StyledPostLink = styled(Link)`
+  text-decoration: none;
+  margin-right: 10px;
+`;
+
+const StyledPostButton = styled.button``;

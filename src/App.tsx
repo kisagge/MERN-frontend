@@ -7,6 +7,7 @@ import CreatePostPage from "./pages/CreatePost";
 import HomePage from "./pages/Home";
 import PostDetailPage from "./pages/PostDetail";
 import PostListPage from "./pages/PostList";
+import UpdatePostPage from "./pages/UpdatePost";
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
           <Route path="/post/:id" element={<PostDetailPage />}></Route>
           {/* Post List Page */}
           <Route path="/post" element={<PostListPage />}></Route>
+          {/* Update Post Page */}
+          <Route path="/post/update/:id" element={<UpdatePostPage />}></Route>
         </Routes>
       </RecoilRoot>
     </BrowserRouter>

@@ -33,7 +33,6 @@ const PostDetailPage = () => {
     fetchPost();
   }, []);
 
-  console.log(id);
   return (
     <StyledDetailPostDiv>
       {post && (

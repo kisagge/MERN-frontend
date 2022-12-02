@@ -8,7 +8,7 @@ type PostType = {
   description: string;
 };
 
-const HomePage = () => {
+const PostListPage = () => {
   const [posts, setPosts] = useState<PostType[]>([]);
   useEffect(() => {
     const fetchPosts = async () => {
@@ -29,7 +29,7 @@ const HomePage = () => {
   }, []);
 
   return (
-    <StyledHome>
+    <StyledPostList>
       <ol className="post-list">
         {posts &&
           posts.map((post) => (
@@ -38,12 +38,12 @@ const HomePage = () => {
             </li>
           ))}
       </ol>
-    </StyledHome>
+    </StyledPostList>
   );
 };
 
-export default HomePage;
+export default PostListPage;
 
-const StyledHome = styled.div`
+const StyledPostList = styled.div`
   margin: 20px;
 `;

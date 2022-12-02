@@ -4,14 +4,16 @@ import styled from "styled-components";
 const Navbar = () => {
   return (
     <StyledHeader>
-      <h1>Project</h1>
+      <h1>
+        <StyledLogoLink to="/">Main</StyledLogoLink>
+      </h1>
       <StyledContainer>
-        <StyledLink>
-          <Link to="/">Post List</Link>
-        </StyledLink>
-        <StyledLink>
-          <Link to="/create">Create Post</Link>
-        </StyledLink>
+        <StyledLi>
+          <StyledLiLink to="/post">Post List</StyledLiLink>
+        </StyledLi>
+        <StyledLi>
+          <StyledLiLink to="/create">Create Post</StyledLiLink>
+        </StyledLi>
       </StyledContainer>
     </StyledHeader>
   );
@@ -30,11 +32,19 @@ const StyledHeader = styled.header`
   align-items: center;
 `;
 
+const StyledLogoLink = styled(Link)`
+  text-decoration: none;
+`;
+
 const StyledContainer = styled.ul`
   list-style: none;
 `;
 
-const StyledLink = styled.li`
+const StyledLi = styled.li`
   margin-right: 30px;
   float: left;
+`;
+
+const StyledLiLink = styled(Link)`
+  text-decoration: none;
 `;

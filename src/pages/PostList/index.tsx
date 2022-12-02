@@ -48,12 +48,6 @@ const PostListPage = () => {
       queryArray.push(`keyword=${keyword}`);
     }
 
-    const page = searchParams.get("page") ?? "1";
-
-    if (Number(page) !== 1) {
-      queryArray.push(`page=${page}`);
-    }
-
     if (queryArray.length > 0) {
       queryString = `?${queryArray.join("&")}`;
     }

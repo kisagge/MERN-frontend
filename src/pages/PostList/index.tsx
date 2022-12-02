@@ -10,6 +10,9 @@ type PostType = {
 
 const PostListPage = () => {
   const [posts, setPosts] = useState<PostType[]>([]);
+
+  const [error, setError] = useState<string | null>("");
+
   useEffect(() => {
     const fetchPosts = async () => {
       const response = await fetch("http://localhost:4000/api/posts", {
@@ -28,6 +31,25 @@ const PostListPage = () => {
     fetchPosts();
   }, []);
 
+  // onClick Handler
+  const onClickDeleteButton = async (id: string) => {
+    const response = await fetch(`http://localhost:4000/api/posts/${id}`, {
+      method: "DELETE",
+    });
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      setError(json.error);
+    }
+
+    if (response.ok) {
+      setError(null);
+      const newPosts = posts.filter((post) => post._id !== id);
+      setPosts(newPosts);
+    }
+  };
+
   return (
     <StyledPostList>
       <StyledOrderedList>
@@ -39,10 +61,13 @@ const PostListPage = () => {
               </StyledPostLink>
               <div>
                 <StyledPostLink to={`/post/update/${post._id}`}>update</StyledPostLink>
-                <StyledPostButton>Delete</StyledPostButton>
+                <StyledPostButton onClick={() => onClickDeleteButton(post._id)}>
+                  Delete
+                </StyledPostButton>
               </div>
             </StyledPostLi>
           ))}
+        {error && <div className="error">{error}</div>}
       </StyledOrderedList>
     </StyledPostList>
   );

@@ -5,9 +5,14 @@ const Navbar = () => {
   return (
     <StyledHeader>
       <h1>Project</h1>
-      <div className="container">
-        <Link to="/">Post List</Link>
-      </div>
+      <StyledContainer>
+        <StyledLink>
+          <Link to="/">Post List</Link>
+        </StyledLink>
+        <StyledLink>
+          <Link to="/create">Create Post</Link>
+        </StyledLink>
+      </StyledContainer>
     </StyledHeader>
   );
 };
@@ -23,4 +28,13 @@ const StyledHeader = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`;
+
+const StyledContainer = styled.ul`
+  list-style: none;
+`;
+
+const StyledLink = styled.li`
+  margin-right: 30px;
+  float: left;
 `;

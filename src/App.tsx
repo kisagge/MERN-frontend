@@ -1,8 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import CreatePostPage from "./pages/CreatePost";
 
 // pages & components
-import Home from "./pages/Home";
+import HomePage from "./pages/Home";
 
 function App() {
   return (
@@ -11,7 +12,8 @@ function App() {
         <Navbar />
         <div className="pages">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/create" element={<CreatePostPage />} />
           </Routes>
         </div>
       </BrowserRouter>

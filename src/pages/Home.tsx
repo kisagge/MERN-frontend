@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
 
 type PostType = {
   _id: string;
@@ -6,7 +8,7 @@ type PostType = {
   description: string;
 };
 
-const Home = () => {
+const HomePage = () => {
   const [posts, setPosts] = useState<PostType[]>([]);
   useEffect(() => {
     const fetchPosts = async () => {
@@ -27,10 +29,21 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="home">
-      <div className="posts">{posts && posts.map((post) => <p key={post._id}>{post.name}</p>)}</div>
-    </div>
+    <StyledHome>
+      <ol className="post-list">
+        {posts &&
+          posts.map((post) => (
+            <li key={`post-${post._id}`}>
+              <Link to={`/post/${post._id}`}>{post.name}</Link>
+            </li>
+          ))}
+      </ol>
+    </StyledHome>
   );
 };
 
-export default Home;
+export default HomePage;
+
+const StyledHome = styled.div`
+  margin: 20px;
+`;

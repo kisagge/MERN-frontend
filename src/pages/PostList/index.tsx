@@ -8,6 +8,13 @@ type PostType = {
   description: string;
 };
 
+interface PaginationPropsType {
+  currentPage: number;
+  endPage: number;
+  startPage: number;
+  totalPage: number;
+}
+
 const PostListPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -16,6 +23,12 @@ const PostListPage = () => {
 
   const [keyword, setKeyword] = useState("");
   const [error, setError] = useState<string | null>("");
+  const [pagination, setPagination] = useState<PaginationPropsType>({
+    startPage: 1,
+    endPage: 1,
+    currentPage: 1,
+    totalPage: 1,
+  });
 
   // input handler
   const handleChangeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
@@ -30,12 +43,19 @@ const PostListPage = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let queryString = ``;
+    const queryArray = [];
     if (keyword.trim()) {
-      queryString += `keyword=${keyword}`;
+      queryArray.push(`keyword=${keyword}`);
     }
 
-    if (queryString.length > 0) {
-      queryString = `?${queryString}`;
+    const page = searchParams.get("page") ?? "1";
+
+    if (Number(page) !== 1) {
+      queryArray.push(`page=${page}`);
+    }
+
+    if (queryArray.length > 0) {
+      queryString = `?${queryArray.join("&")}`;
     }
 
     navigate(`/post${queryString}`);
@@ -48,10 +68,17 @@ const PostListPage = () => {
     const json = await response.json();
 
     if (response.ok) {
-      setPosts(json);
+      setPosts(json.posts);
+      setPagination({
+        startPage: json.startPage,
+        endPage: json.endPage,
+        currentPage: json.currentPage,
+        totalPage: json.totalPage,
+      });
     }
   };
 
+  // onClick handler
   const onClickDeleteButton = async (id: string) => {
     const response = await fetch(`http://localhost:4000/api/posts/${id}`, {
       method: "DELETE",
@@ -65,21 +92,93 @@ const PostListPage = () => {
 
     if (response.ok) {
       setError(null);
-      const newPosts = posts.filter((post) => post._id !== id);
-      setPosts(newPosts);
+
+      // refetch
+      let queryString = ``;
+      const queryArray = [];
+      if (keyword.trim()) {
+        queryArray.push(`keyword=${keyword}`);
+      }
+
+      const page = searchParams.get("page") ?? "1";
+
+      if (Number(page) !== 1) {
+        queryArray.push(`page=${page}`);
+      }
+
+      if (queryArray.length > 0) {
+        queryString = `?${queryArray.join("&")}`;
+      }
+
+      const res = await fetch(`http://localhost:4000/api/posts${queryString}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const json = await res.json();
+
+      if (res.ok) {
+        setPosts(json.posts);
+        setPagination({
+          startPage: json.startPage,
+          endPage: json.endPage,
+          currentPage: json.currentPage,
+          totalPage: json.totalPage,
+        });
+      }
+    }
+  };
+
+  const onClickPagination = async (page: number) => {
+    let queryString = ``;
+    const queryArray = [];
+    if (keyword.trim()) {
+      queryArray.push(`keyword=${keyword}`);
+    }
+    if (page !== 1) {
+      queryArray.push(`page=${page}`);
+    }
+
+    if (queryArray.length > 0) {
+      queryString = `?${queryArray.join("&")}`;
+    }
+
+    navigate(`/post${queryString}`);
+    const response = await fetch(`http://localhost:4000/api/posts${queryString}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const json = await response.json();
+
+    if (response.ok) {
+      setPosts(json.posts);
+      setPagination({
+        startPage: json.startPage,
+        endPage: json.endPage,
+        currentPage: json.currentPage,
+        totalPage: json.totalPage,
+      });
     }
   };
 
   useEffect(() => {
-    const fetchPosts = async (keyword: string) => {
+    const fetchPosts = async (keyword: string, page: string) => {
       let queryString = ``;
       setKeyword(keyword);
+      const queryArray = [];
       if (keyword.trim()) {
-        queryString += `keyword=${keyword}`;
+        queryArray.push(`keyword=${keyword}`);
       }
 
-      if (queryString.length > 0) {
-        queryString = `?${queryString}`;
+      if (Number(page) !== 1) {
+        queryArray.push(`page=${page}`);
+      }
+
+      if (queryArray.length > 0) {
+        queryString = `?${queryArray.join("&")}`;
       }
 
       const response = await fetch(`http://localhost:4000/api/posts${queryString}`, {
@@ -91,11 +190,17 @@ const PostListPage = () => {
       const json = await response.json();
 
       if (response.ok) {
-        setPosts(json);
+        setPosts(json.posts);
+        setPagination({
+          startPage: json.startPage,
+          endPage: json.endPage,
+          currentPage: json.currentPage,
+          totalPage: json.totalPage,
+        });
       }
     };
 
-    fetchPosts(searchParams.get("keyword") ?? "");
+    fetchPosts(searchParams.get("keyword") ?? "", searchParams.get("page") ?? "1");
   }, []);
 
   return (
@@ -109,6 +214,7 @@ const PostListPage = () => {
         />
         <button>Search</button>
       </StyledSearchSection>
+      {posts.length <= 0 && <div className="empty">No Post List</div>}
       <StyledOrderedList>
         {posts &&
           posts.map((post, idx) => (
@@ -126,6 +232,47 @@ const PostListPage = () => {
           ))}
         {error && <div className="error">{error}</div>}
       </StyledOrderedList>
+      <StyledPaginationDiv>
+        <StyledPaginationUl>
+          {pagination.currentPage > 1 && (
+            <StyledPaginationLi>
+              <StyledPaginationLiButton
+                onClick={() =>
+                  onClickPagination(pagination.startPage > 1 ? pagination.startPage - 1 : 1)
+                }
+              >
+                start
+              </StyledPaginationLiButton>
+            </StyledPaginationLi>
+          )}
+          {Array.from({ length: pagination.endPage - pagination.startPage + 1 }, (_, i) => i).map(
+            (i) => (
+              <StyledPaginationLi>
+                <StyledPaginationLiButton
+                  onClick={() => onClickPagination(i + pagination.startPage)}
+                >
+                  {i + pagination.startPage}
+                </StyledPaginationLiButton>
+              </StyledPaginationLi>
+            ),
+          )}
+          {pagination.currentPage < pagination.totalPage && pagination.totalPage > 1 && (
+            <StyledPaginationLi>
+              <StyledPaginationLiButton
+                onClick={() =>
+                  onClickPagination(
+                    pagination.totalPage > pagination.endPage
+                      ? pagination.endPage + 1
+                      : pagination.totalPage,
+                  )
+                }
+              >
+                end
+              </StyledPaginationLiButton>
+            </StyledPaginationLi>
+          )}
+        </StyledPaginationUl>
+      </StyledPaginationDiv>
     </StyledPostList>
   );
 };
@@ -160,3 +307,14 @@ const StyledPostLink = styled(Link)`
 `;
 
 const StyledPostButton = styled.button``;
+
+const StyledPaginationDiv = styled.div``;
+
+const StyledPaginationUl = styled.ul`
+  list-style: none;
+  display: flex;
+`;
+
+const StyledPaginationLi = styled.li``;
+
+const StyledPaginationLiButton = styled.button``;

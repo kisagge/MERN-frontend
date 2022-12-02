@@ -1,23 +1,27 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { RecoilRoot } from "recoil";
 import Navbar from "./components/Navbar";
 import CreatePostPage from "./pages/CreatePost";
 
 // pages & components
-import HomePage from "./pages/Home";
+import HomePage from "./pages/Home/index";
+import PostDetailPage from "./pages/PostDetail";
+import PostListPage from "./pages/PostList";
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
+    <BrowserRouter>
+      <RecoilRoot>
         <Navbar />
-        <div className="pages">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/create" element={<CreatePostPage />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </div>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/create" element={<CreatePostPage />} />
+          <Route path="/post/:id" element={<PostDetailPage />}></Route>
+          {/* Post List Page */}
+          <Route path="/post" element={<PostListPage />}></Route>
+        </Routes>
+      </RecoilRoot>
+    </BrowserRouter>
   );
 }
 

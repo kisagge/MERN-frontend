@@ -4,7 +4,7 @@ import Navbar from "./components/Navbar";
 import CreatePostPage from "./pages/CreatePost";
 
 // pages & components
-import HomePage from "./pages/Home/index";
+import HomePage from "./pages/Home";
 import PostDetailPage from "./pages/PostDetail";
 import PostListPage from "./pages/PostList";
 

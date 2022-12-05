@@ -35,9 +35,11 @@ const Navbar = () => {
             <StyledLiLink to="/create">Create Post</StyledLiLink>
           </StyledLi>
         )}
-        <StyledLi>
-          <StyledLiLink to="/register">Register</StyledLiLink>
-        </StyledLi>
+        {!accessToken && (
+          <StyledLi>
+            <StyledLiLink to="/register">Register</StyledLiLink>
+          </StyledLi>
+        )}
         {!accessToken && (
           <StyledLi>
             <StyledLiLink to="/sign-in">Sign In</StyledLiLink>

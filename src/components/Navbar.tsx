@@ -1,7 +1,26 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useRecoilState, useResetRecoilState } from "recoil";
 import styled from "styled-components";
+import { tokenState } from "../atom";
 
 const Navbar = () => {
+  const sessionToken = sessionStorage.getItem("accessToken");
+
+  const [accessToken, setAccessToken] = useRecoilState(tokenState);
+
+  // onClick sign out
+  const onClickSignOut = () => {
+    sessionStorage.removeItem("accessToken");
+    useResetRecoilState(tokenState);
+  };
+
+  useEffect(() => {
+    if (sessionToken) {
+      setAccessToken(sessionToken);
+    }
+  }, []);
+
   return (
     <StyledHeader>
       <h1>
@@ -11,9 +30,26 @@ const Navbar = () => {
         <StyledLi>
           <StyledLiLink to="/post">Post List</StyledLiLink>
         </StyledLi>
+        {accessToken && (
+          <StyledLi>
+            <StyledLiLink to="/create">Create Post</StyledLiLink>
+          </StyledLi>
+        )}
         <StyledLi>
-          <StyledLiLink to="/create">Create Post</StyledLiLink>
+          <StyledLiLink to="/register">Register</StyledLiLink>
         </StyledLi>
+        {!accessToken && (
+          <StyledLi>
+            <StyledLiLink to="/sign-in">Sign In</StyledLiLink>
+          </StyledLi>
+        )}
+        {accessToken && (
+          <StyledLi>
+            <StyledLiLink to="/" onClick={onClickSignOut}>
+              Sign Out
+            </StyledLiLink>
+          </StyledLi>
+        )}
       </StyledContainer>
     </StyledHeader>
   );

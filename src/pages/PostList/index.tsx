@@ -292,11 +292,12 @@ const PostListPage = () => {
 export default PostListPage;
 
 const StyledPostList = styled.div`
-  margin: 20px;
+  margin: 20px 0 0 40px;
 `;
 
 const StyledSearchSection = styled.form`
-  margin-left: 40px;
+  /* margin-left: 40px; */
+  margin-bottom: 20px;
 `;
 
 const StyledSearchInput = styled.input`
@@ -325,6 +326,7 @@ const StyledPaginationDiv = styled.div``;
 const StyledPaginationUl = styled.ul`
   list-style: none;
   display: flex;
+  padding-left: 0;
 `;
 
 const StyledPaginationLi = styled.li``;

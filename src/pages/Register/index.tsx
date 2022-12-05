@@ -68,6 +68,8 @@ const RegisterPage = () => {
 
     if (response.ok) {
       setError(null);
+      alert("Complete register!");
+      navigate("/sign-in");
     }
   };
 

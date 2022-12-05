@@ -1,6 +1,8 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import { tokenState } from "../../atom";
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -9,6 +11,8 @@ const SignInPage = () => {
   const [password, setPassword] = useState("");
 
   const [error, setError] = useState<string | null>(null);
+
+  const tokenHandler = useSetRecoilState(tokenState);
 
   // input handler
   const handleChangeUserId = (e: ChangeEvent<HTMLInputElement>) => setUserId(e.target.value);
@@ -40,6 +44,7 @@ const SignInPage = () => {
     if (response.ok) {
       setError(null);
       sessionStorage.setItem("accessToken", json.token);
+      tokenHandler(json.token);
       navigate("/");
     }
   };
@@ -48,7 +53,7 @@ const SignInPage = () => {
     <StyledSignInForm onSubmit={handleSubmit}>
       <h3>Sign In</h3>
       <StyledUserIdInputDiv>
-        <label>User Id</label>
+        <label>User Id : </label>
         <input
           type="text"
           placeholder="user id"
@@ -59,7 +64,7 @@ const SignInPage = () => {
         />
       </StyledUserIdInputDiv>
       <StyledPasswordInputDiv>
-        <label>Password</label>
+        <label>Password : </label>
         <input
           type="password"
           placeholder="password"
@@ -78,11 +83,23 @@ const SignInPage = () => {
 
 export default SignInPage;
 
-const StyledSignInForm = styled.form``;
+const StyledSignInForm = styled.form`
+  margin-left: 30px;
+`;
 
-const StyledUserIdInputDiv = styled.div``;
+const StyledUserIdInputDiv = styled.div`
+  margin-bottom: 10px;
+  width: 300px;
+  display: flex;
+  justify-content: space-between;
+`;
 
-const StyledPasswordInputDiv = styled.div``;
+const StyledPasswordInputDiv = styled.div`
+  margin-bottom: 10px;
+  width: 300px;
+  display: flex;
+  justify-content: space-between;
+`;
 
 const StyledSignInButton = styled.button``;
 

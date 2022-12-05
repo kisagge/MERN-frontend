@@ -15,7 +15,7 @@ const CreatePostPage = () => {
     setName(e.target.value);
   };
 
-  const handleChangeDescription = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeDescription = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.target.value);
   };
 
@@ -60,12 +60,12 @@ const CreatePostPage = () => {
     <StyledForm onSubmit={handleSubmit}>
       <h3>Add a New Post</h3>
       <StyledNameInputDiv>
-        <label>Post Name : </label>
+        <label>Post Name </label>
         <input type="text" onChange={handleChangeName} value={name} maxLength={20} />
       </StyledNameInputDiv>
       <StyledDescriptionInputDiv>
-        <label>Post Description : </label>
-        <input type="text" onChange={handleChangeDescription} value={description} maxLength={100} />
+        <label>Post Description</label>
+        <textarea onChange={handleChangeDescription} value={description} maxLength={100} />
       </StyledDescriptionInputDiv>
       <button>Add Post</button>
       {error && <div className="error">{error}</div>}
@@ -75,8 +75,20 @@ const CreatePostPage = () => {
 
 export default CreatePostPage;
 
-const StyledForm = styled.form``;
+const StyledForm = styled.form`
+  margin-left: 30px;
+`;
 
-const StyledNameInputDiv = styled.div``;
+const StyledNameInputDiv = styled.div`
+  margin-bottom: 10px;
+`;
 
-const StyledDescriptionInputDiv = styled.div``;
+const StyledDescriptionInputDiv = styled.div`
+  margin-bottom: 10px;
+
+  textarea {
+    display: block;
+    width: 320px;
+    resize: none;
+  }
+`;

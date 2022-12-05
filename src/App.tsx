@@ -7,6 +7,7 @@ import CreatePostPage from "./pages/CreatePost";
 import HomePage from "./pages/Home";
 import PostDetailPage from "./pages/PostDetail";
 import PostListPage from "./pages/PostList";
+import RegisterPage from "./pages/Register";
 import UpdatePostPage from "./pages/UpdatePost";
 
 function App() {
@@ -22,6 +23,9 @@ function App() {
           <Route path="/post" element={<PostListPage />}></Route>
           {/* Update Post Page */}
           <Route path="/post/update/:id" element={<UpdatePostPage />}></Route>
+
+          {/* Register Page */}
+          <Route path="/register" element={<RegisterPage />}></Route>
         </Routes>
       </RecoilRoot>
     </BrowserRouter>

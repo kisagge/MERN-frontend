@@ -1,6 +1,8 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
+import { tokenState } from "../../atom";
 
 const UpdatePostPage = () => {
   const { id } = useParams();
@@ -11,12 +13,14 @@ const UpdatePostPage = () => {
 
   const [error, setError] = useState<string | null>(null);
 
+  const [accessToken, setAccessToken] = useRecoilState(tokenState);
+
   // input handler
   const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   };
 
-  const handleChangeDescription = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChangeDescription = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setDescription(e.target.value);
   };
 
@@ -77,6 +81,16 @@ const UpdatePostPage = () => {
       }
     };
 
+    if (!accessToken && !sessionStorage.getItem("accessToken")) {
+      navigate(-1);
+      return;
+    }
+
+    const sessionToken = sessionStorage.getItem("accessToken") ?? "";
+    if (!accessToken && sessionToken) {
+      setAccessToken(sessionToken);
+    }
+
     fetchPost();
   }, []);
 
@@ -89,7 +103,12 @@ const UpdatePostPage = () => {
       </StyledNameInputDiv>
       <StyledDescriptionInputDiv>
         <label>Post Description : </label>
-        <input type="text" onChange={handleChangeDescription} value={description} maxLength={100} />
+        <textarea
+          onChange={handleChangeDescription}
+          value={description}
+          maxLength={100}
+          cols={200}
+        />
       </StyledDescriptionInputDiv>
       <button>Update Post</button>
       {error && <div className="error">{error}</div>}
@@ -99,8 +118,22 @@ const UpdatePostPage = () => {
 
 export default UpdatePostPage;
 
-const StyledForm = styled.form``;
+const StyledForm = styled.form`
+  margin-left: 30px;
+`;
 
-const StyledNameInputDiv = styled.div``;
+const StyledNameInputDiv = styled.div`
+  margin-bottom: 10px;
+`;
 
-const StyledDescriptionInputDiv = styled.div``;
+const StyledDescriptionInputDiv = styled.div`
+  margin-bottom: 10px;
+  height: 100%;
+
+  textarea {
+    display: block;
+    width: 320px;
+    resize: none;
+    height: 300px;
+  }
+`;

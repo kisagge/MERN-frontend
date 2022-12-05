@@ -1,6 +1,8 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
+import { tokenState } from "../../atom";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -11,6 +13,8 @@ const RegisterPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [error, setError] = useState<string | null>(null);
+
+  const setAccessToken = useSetRecoilState(tokenState);
 
   // input handler
   const handleChangeUserId = (e: ChangeEvent<HTMLInputElement>) => setUserId(e.target.value);
@@ -72,6 +76,15 @@ const RegisterPage = () => {
       navigate("/sign-in");
     }
   };
+
+  // mounted
+  useEffect(() => {
+    const sessionToken = sessionStorage.getItem("accessToken") ?? "";
+    if (sessionToken) {
+      setAccessToken(sessionToken);
+      navigate(-1);
+    }
+  }, []);
 
   return (
     <StyledRegisterForm onSubmit={handleSubmit}>

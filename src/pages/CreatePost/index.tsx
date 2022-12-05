@@ -1,6 +1,9 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
 import styled from "styled-components";
+import { getMyInfo } from "../../api/userApi";
+import { tokenState } from "../../atom";
 
 const CreatePostPage = () => {
   const navigate = useNavigate();
@@ -9,6 +12,8 @@ const CreatePostPage = () => {
   const [description, setDescription] = useState("");
 
   const [error, setError] = useState<string | null>(null);
+
+  const [accessToken, setAccessToken] = useRecoilState(tokenState);
 
   // input handler
   const handleChangeName = (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +61,20 @@ const CreatePostPage = () => {
     }
   };
 
+  useEffect(() => {
+    if (!accessToken && !sessionStorage.getItem("accessToken")) {
+      navigate(-1);
+      return;
+    }
+
+    const sessionToken = sessionStorage.getItem("accessToken") ?? "";
+    if (!accessToken && sessionToken) {
+      setAccessToken(sessionToken);
+    }
+
+    getMyInfo(sessionToken);
+  }, []);
+
   return (
     <StyledForm onSubmit={handleSubmit}>
       <h3>Add a New Post</h3>
@@ -65,7 +84,12 @@ const CreatePostPage = () => {
       </StyledNameInputDiv>
       <StyledDescriptionInputDiv>
         <label>Post Description</label>
-        <textarea onChange={handleChangeDescription} value={description} maxLength={100} />
+        <textarea
+          onChange={handleChangeDescription}
+          value={description}
+          maxLength={100}
+          cols={200}
+        />
       </StyledDescriptionInputDiv>
       <button>Add Post</button>
       {error && <div className="error">{error}</div>}
@@ -85,10 +109,12 @@ const StyledNameInputDiv = styled.div`
 
 const StyledDescriptionInputDiv = styled.div`
   margin-bottom: 10px;
+  height: 100%;
 
   textarea {
     display: block;
     width: 320px;
     resize: none;
+    height: 300px;
   }
 `;

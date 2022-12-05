@@ -30,6 +30,8 @@ const PostListPage = () => {
     totalPage: 1,
   });
 
+  const [loading, setLoading] = useState(true);
+
   // input handler
   const handleChangeKeyword = (e: ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
@@ -42,6 +44,8 @@ const PostListPage = () => {
   // handle Submit
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
+
     let queryString = ``;
     const queryArray = [];
     if (keyword.trim()) {
@@ -69,11 +73,14 @@ const PostListPage = () => {
         currentPage: json.currentPage,
         totalPage: json.totalPage,
       });
+      setLoading(false);
     }
   };
 
   // onClick handler
   const onClickDeleteButton = async (id: string) => {
+    setLoading(true);
+
     const response = await fetch(`http://localhost:4000/api/posts/${id}`, {
       method: "DELETE",
     });
@@ -120,11 +127,14 @@ const PostListPage = () => {
           currentPage: json.currentPage,
           totalPage: json.totalPage,
         });
+        setLoading(false);
       }
     }
   };
 
   const onClickPagination = async (page: number) => {
+    setLoading(true);
+
     let queryString = ``;
     const queryArray = [];
     if (keyword.trim()) {
@@ -155,6 +165,7 @@ const PostListPage = () => {
         currentPage: json.currentPage,
         totalPage: json.totalPage,
       });
+      setLoading(false);
     }
   };
 
@@ -191,6 +202,7 @@ const PostListPage = () => {
           currentPage: json.currentPage,
           totalPage: json.totalPage,
         });
+        setLoading(false);
       }
     };
 
@@ -208,65 +220,71 @@ const PostListPage = () => {
         />
         <button>Search</button>
       </StyledSearchSection>
-      {posts.length <= 0 && <div className="empty">No Post List</div>}
-      <StyledOrderedList>
-        {posts &&
-          posts.map((post, idx) => (
-            <StyledPostLi key={`post-${post._id}`}>
-              <StyledPostLink to={`/post/${post._id}`}>
-                {idx + 1}. {post.name}
-              </StyledPostLink>
-              <div>
-                <StyledPostLink to={`/post/update/${post._id}`}>update</StyledPostLink>
-                <StyledPostButton onClick={() => onClickDeleteButton(post._id)}>
-                  Delete
-                </StyledPostButton>
-              </div>
-            </StyledPostLi>
-          ))}
-        {error && <div className="error">{error}</div>}
-      </StyledOrderedList>
-      <StyledPaginationDiv>
-        <StyledPaginationUl>
-          {pagination.currentPage > 1 && (
-            <StyledPaginationLi>
-              <StyledPaginationLiButton
-                onClick={() =>
-                  onClickPagination(pagination.startPage > 1 ? pagination.startPage - 1 : 1)
-                }
-              >
-                start
-              </StyledPaginationLiButton>
-            </StyledPaginationLi>
-          )}
-          {Array.from({ length: pagination.endPage - pagination.startPage + 1 }, (_, i) => i).map(
-            (i) => (
-              <StyledPaginationLi>
-                <StyledPaginationLiButton
-                  onClick={() => onClickPagination(i + pagination.startPage)}
-                >
-                  {i + pagination.startPage}
-                </StyledPaginationLiButton>
-              </StyledPaginationLi>
-            ),
-          )}
-          {pagination.currentPage < pagination.totalPage && pagination.totalPage > 1 && (
-            <StyledPaginationLi>
-              <StyledPaginationLiButton
-                onClick={() =>
-                  onClickPagination(
-                    pagination.totalPage > pagination.endPage
-                      ? pagination.endPage + 1
-                      : pagination.totalPage,
-                  )
-                }
-              >
-                end
-              </StyledPaginationLiButton>
-            </StyledPaginationLi>
-          )}
-        </StyledPaginationUl>
-      </StyledPaginationDiv>
+      {loading && <div className="loading">Loading...</div>}
+      {!loading && (
+        <>
+          {posts.length <= 0 && <div className="empty">No Post List</div>}
+          <StyledOrderedList>
+            {posts &&
+              posts.map((post, idx) => (
+                <StyledPostLi key={`post-${post._id}`}>
+                  <StyledPostLink to={`/post/${post._id}`}>
+                    {idx + 1}. {post.name}
+                  </StyledPostLink>
+                  <div>
+                    <StyledPostLink to={`/post/update/${post._id}`}>update</StyledPostLink>
+                    <StyledPostButton onClick={() => onClickDeleteButton(post._id)}>
+                      Delete
+                    </StyledPostButton>
+                  </div>
+                </StyledPostLi>
+              ))}
+            {error && <div className="error">{error}</div>}
+          </StyledOrderedList>
+          <StyledPaginationDiv>
+            <StyledPaginationUl>
+              {pagination.currentPage > 1 && (
+                <StyledPaginationLi>
+                  <StyledPaginationLiButton
+                    onClick={() =>
+                      onClickPagination(pagination.startPage > 1 ? pagination.startPage - 1 : 1)
+                    }
+                  >
+                    start
+                  </StyledPaginationLiButton>
+                </StyledPaginationLi>
+              )}
+              {Array.from(
+                { length: pagination.endPage - pagination.startPage + 1 },
+                (_, i) => i,
+              ).map((i) => (
+                <StyledPaginationLi>
+                  <StyledPaginationLiButton
+                    onClick={() => onClickPagination(i + pagination.startPage)}
+                  >
+                    {i + pagination.startPage}
+                  </StyledPaginationLiButton>
+                </StyledPaginationLi>
+              ))}
+              {pagination.currentPage < pagination.totalPage && pagination.totalPage > 1 && (
+                <StyledPaginationLi>
+                  <StyledPaginationLiButton
+                    onClick={() =>
+                      onClickPagination(
+                        pagination.totalPage > pagination.endPage
+                          ? pagination.endPage + 1
+                          : pagination.totalPage,
+                      )
+                    }
+                  >
+                    end
+                  </StyledPaginationLiButton>
+                </StyledPaginationLi>
+              )}
+            </StyledPaginationUl>
+          </StyledPaginationDiv>
+        </>
+      )}
     </StyledPostList>
   );
 };

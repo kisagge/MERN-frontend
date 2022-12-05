@@ -8,6 +8,7 @@ import HomePage from "./pages/Home";
 import PostDetailPage from "./pages/PostDetail";
 import PostListPage from "./pages/PostList";
 import RegisterPage from "./pages/Register";
+import SignInPage from "./pages/SignIn";
 import UpdatePostPage from "./pages/UpdatePost";
 
 function App() {
@@ -26,6 +27,8 @@ function App() {
 
           {/* Register Page */}
           <Route path="/register" element={<RegisterPage />}></Route>
+          {/* SignIn Page */}
+          <Route path="/sign-in" element={<SignInPage />}></Route>
         </Routes>
       </RecoilRoot>
     </BrowserRouter>

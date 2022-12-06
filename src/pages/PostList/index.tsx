@@ -65,7 +65,12 @@ const PostListPage = () => {
     });
     const json = await response.json();
 
+    if (!response.ok) {
+      setError(json.error);
+    }
+
     if (response.ok) {
+      setError(null);
       setPosts(json.posts);
       setPagination({
         startPage: json.startPage,
@@ -74,61 +79,6 @@ const PostListPage = () => {
         totalPage: json.totalPage,
       });
       setLoading(false);
-    }
-  };
-
-  // onClick handler
-  const onClickDeleteButton = async (id: string) => {
-    setLoading(true);
-
-    const response = await fetch(`http://localhost:4000/api/posts/${id}`, {
-      method: "DELETE",
-    });
-
-    const json = await response.json();
-
-    if (!response.ok) {
-      setError(json.error);
-    }
-
-    if (response.ok) {
-      setError(null);
-
-      // refetch
-      let queryString = ``;
-      const queryArray = [];
-      if (keyword.trim()) {
-        queryArray.push(`keyword=${keyword}`);
-      }
-
-      const page = searchParams.get("page") ?? "1";
-
-      if (Number(page) !== 1) {
-        queryArray.push(`page=${page}`);
-      }
-
-      if (queryArray.length > 0) {
-        queryString = `?${queryArray.join("&")}`;
-      }
-
-      const res = await fetch(`http://localhost:4000/api/posts${queryString}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const json = await res.json();
-
-      if (res.ok) {
-        setPosts(json.posts);
-        setPagination({
-          startPage: json.startPage,
-          endPage: json.endPage,
-          currentPage: json.currentPage,
-          totalPage: json.totalPage,
-        });
-        setLoading(false);
-      }
     }
   };
 
@@ -231,12 +181,6 @@ const PostListPage = () => {
                   <StyledPostLink to={`/post/${post._id}`}>
                     {idx + 1}. {post.name}
                   </StyledPostLink>
-                  <div>
-                    <StyledPostLink to={`/post/update/${post._id}`}>update</StyledPostLink>
-                    <StyledPostButton onClick={() => onClickDeleteButton(post._id)}>
-                      Delete
-                    </StyledPostButton>
-                  </div>
                 </StyledPostLi>
               ))}
             {error && <div className="error">{error}</div>}
@@ -306,6 +250,7 @@ const StyledSearchInput = styled.input`
 
 const StyledOrderedList = styled.ol`
   list-style: none;
+  padding-left: 0;
 `;
 
 const StyledPostLi = styled.li`
@@ -318,8 +263,6 @@ const StyledPostLink = styled(Link)`
   text-decoration: none;
   margin-right: 10px;
 `;
-
-const StyledPostButton = styled.button``;
 
 const StyledPaginationDiv = styled.div``;
 

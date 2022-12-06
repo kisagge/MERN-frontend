@@ -45,6 +45,7 @@ const CreatePostPage = () => {
       method: "POST",
       body: JSON.stringify(post),
       headers: {
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
     });

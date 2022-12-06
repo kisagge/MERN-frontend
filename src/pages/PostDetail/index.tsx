@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import styled from "styled-components";
 import { tokenState } from "../../atom";
+import CommentSection from "../../components/PostDetail/CommentSection";
 
 type DetailPostType = {
   _id: string;
@@ -13,20 +14,6 @@ type DetailPostType = {
   isAbleModified: boolean;
   userId: string;
 };
-
-interface CommentType {
-  _id: string;
-  content: string;
-  isAbleModified: boolean;
-  userId: string;
-}
-
-interface PaginationPropsType {
-  currentPage: number;
-  endPage: number;
-  startPage: number;
-  totalPage: number;
-}
 
 const PostDetailPage = () => {
   const { id } = useParams();
@@ -39,14 +26,6 @@ const PostDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const [error, setError] = useState<string | null>(null);
-
-  const [comments, setComments] = useState<CommentType[]>([]);
-  const [pagination, setPagination] = useState<PaginationPropsType>({
-    startPage: 1,
-    endPage: 1,
-    currentPage: 1,
-    totalPage: 1,
-  });
 
   // onClick handler
   const onClickDeleteButton = async () => {
@@ -67,32 +46,6 @@ const PostDetailPage = () => {
     if (response.ok) {
       setError(null);
       navigate("/post");
-    }
-  };
-
-  const fetchComments = async (page: number) => {
-    const queryString = page > 1 ? `?page=${page}` : "";
-    const response = await fetch(
-      `${process.env.REACT_APP_API_BASE_URL}/api/comments/${id}${queryString}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("accessToken") ?? ""}`,
-        },
-      },
-    );
-
-    const json = await response.json();
-
-    if (response.ok) {
-      setComments(json.data.comments);
-      setPagination({
-        startPage: json.data.startPage,
-        endPage: json.data.endPage,
-        currentPage: json.data.currentPage,
-        totalPage: json.data.totalPage,
-      });
     }
   };
 
@@ -119,8 +72,6 @@ const PostDetailPage = () => {
     }
 
     fetchPost();
-
-    fetchComments(1);
   }, []);
 
   return (
@@ -154,14 +105,7 @@ const PostDetailPage = () => {
           {error && <StyledErrorDiv>{error}</StyledErrorDiv>}
         </>
       )}
-      <StyledCommentsSection>
-        <h4>Comments</h4>
-        <StyledCommentUl>
-          {comments.map((comment) => {
-            return <li key={`comment-${comment._id}`}>{comment.content}</li>;
-          })}
-        </StyledCommentUl>
-      </StyledCommentsSection>
+      <CommentSection postId={String(id)} />
     </StyledDetailPostDiv>
   );
 };
@@ -181,11 +125,3 @@ const StyledPostDeleteButton = styled.button``;
 const StyledPostLoadingDiv = styled.div``;
 
 const StyledErrorDiv = styled.div``;
-
-const StyledCommentsSection = styled.div`
-  margin-top: 50px;
-`;
-
-const StyledCommentUl = styled.div`
-  list-style: none;
-`;

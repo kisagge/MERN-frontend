@@ -11,6 +11,7 @@ type DetailPostType = {
   createdAt: string;
   updatedAt: string;
   isAbleModified: boolean;
+  userId: string;
 };
 
 const PostDetailPage = () => {
@@ -84,6 +85,8 @@ const PostDetailPage = () => {
         <>
           <h3>Name</h3>
           <p>{post.name}</p>
+          <h3>Writer</h3>
+          <p>{post.userId}</p>
           <h3>Description</h3>
           <p>{post.description}</p>
           <h3>Created At</h3>

@@ -56,7 +56,10 @@ const PostListPage = () => {
       queryString = `?${queryArray.join("&")}`;
     }
 
-    navigate(`/post${queryString}`);
+    navigate({
+      pathname: "/post",
+      search: queryString,
+    });
     const response = await fetch(`http://localhost:4000/api/posts${queryString}`, {
       method: "GET",
       headers: {
@@ -202,7 +205,7 @@ const PostListPage = () => {
                 { length: pagination.endPage - pagination.startPage + 1 },
                 (_, i) => i,
               ).map((i) => (
-                <StyledPaginationLi>
+                <StyledPaginationLi key={`post-list-page-${i}`}>
                   <StyledPaginationLiButton
                     onClick={() => onClickPagination(i + pagination.startPage)}
                   >

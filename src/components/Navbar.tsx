@@ -2,12 +2,15 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useRecoilState, useResetRecoilState } from "recoil";
 import styled from "styled-components";
-import { tokenState } from "../atom";
+import { getMyInfo } from "../api/userApi";
+import { tokenState, userIdState } from "../atom";
 
 const Navbar = () => {
-  const sessionToken = sessionStorage.getItem("accessToken");
+  const sessionToken = sessionStorage.getItem("accessToken") ?? "";
 
   const [accessToken, setAccessToken] = useRecoilState(tokenState);
+
+  const [userId, setUserId] = useRecoilState(userIdState);
 
   // onClick sign out
   const onClickSignOut = () => {
@@ -19,6 +22,17 @@ const Navbar = () => {
     if (sessionToken) {
       setAccessToken(sessionToken);
     }
+
+    const fetchUserInfo = async () => {
+      const { ok, json } = await getMyInfo(sessionToken);
+      if (ok) {
+        setUserId(json.data.userId);
+      }
+    };
+
+    if (sessionStorage.getItem("accessToken")) {
+      fetchUserInfo();
+    }
   }, []);
 
   return (
@@ -28,28 +42,43 @@ const Navbar = () => {
       </h1>
       <StyledContainer>
         <StyledLi>
-          <StyledLiLink to="/post">Post List</StyledLiLink>
+          <div>
+            <StyledLiLink to="/post">Post List</StyledLiLink>
+          </div>
         </StyledLi>
         {accessToken && (
           <StyledLi>
-            <StyledLiLink to="/create">Create Post</StyledLiLink>
+            <div>
+              <StyledLiLink to="/create">Create Post</StyledLiLink>
+            </div>
           </StyledLi>
         )}
         {!accessToken && (
           <StyledLi>
-            <StyledLiLink to="/register">Register</StyledLiLink>
+            <div>
+              <StyledLiLink to="/register">Register</StyledLiLink>
+            </div>
           </StyledLi>
         )}
         {!accessToken && (
           <StyledLi>
-            <StyledLiLink to="/sign-in">Sign In</StyledLiLink>
+            <div>
+              <StyledLiLink to="/sign-in">Sign In</StyledLiLink>
+            </div>
           </StyledLi>
         )}
         {accessToken && (
           <StyledLi>
-            <StyledLiLink to="/" onClick={onClickSignOut}>
-              Sign Out
-            </StyledLiLink>
+            <div>
+              <StyledLiLink to="/" onClick={onClickSignOut}>
+                Sign Out
+              </StyledLiLink>
+            </div>
+          </StyledLi>
+        )}
+        {accessToken && (
+          <StyledLi>
+            <p>{userId}</p>
           </StyledLi>
         )}
       </StyledContainer>
@@ -81,8 +110,14 @@ const StyledContainer = styled.ul`
 const StyledLi = styled.li`
   margin-right: 30px;
   float: left;
+  div {
+    width: 100%;
+    text-align: center;
+    padding-top: 15px;
+  }
 `;
 
 const StyledLiLink = styled(Link)`
   text-decoration: none;
+  margin: 0 auto;
 `;

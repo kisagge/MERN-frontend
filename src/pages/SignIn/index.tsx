@@ -2,7 +2,7 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
-import { tokenState } from "../../atom";
+import { tokenState, userIdState } from "../../atom";
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -13,6 +13,7 @@ const SignInPage = () => {
   const [error, setError] = useState<string | null>(null);
 
   const tokenHandler = useSetRecoilState(tokenState);
+  const userIdHandler = useSetRecoilState(userIdState);
 
   // input handler
   const handleChangeUserId = (e: ChangeEvent<HTMLInputElement>) => setUserId(e.target.value);
@@ -45,6 +46,7 @@ const SignInPage = () => {
       setError(null);
       sessionStorage.setItem("accessToken", json.token);
       tokenHandler(json.token);
+      userIdHandler(userId);
       navigate("/");
     }
   };

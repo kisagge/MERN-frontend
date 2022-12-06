@@ -5,4 +5,9 @@ const tokenState = atom({
   default: "",
 });
 
-export { tokenState };
+const userIdState = atom({
+  key: "userId",
+  default: "",
+});
+
+export { tokenState, userIdState };

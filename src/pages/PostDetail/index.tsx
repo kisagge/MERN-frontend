@@ -65,11 +65,6 @@ const PostDetailPage = () => {
       }
     };
 
-    if (!accessToken && !sessionStorage.getItem("accessToken")) {
-      navigate(-1);
-      return;
-    }
-
     const sessionToken = sessionStorage.getItem("accessToken") ?? "";
     if (!accessToken && sessionToken) {
       setAccessToken(sessionToken);

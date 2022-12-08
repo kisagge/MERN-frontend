@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import styled from "styled-components";
 
 interface CommentType {
@@ -8,32 +8,73 @@ interface CommentType {
   userId: string;
 }
 
-interface PaginationPropsType {
-  currentPage: number;
-  endPage: number;
-  startPage: number;
-  totalPage: number;
-}
-
 const CommentSection = (props: { postId: string }) => {
   const { postId } = props;
 
   const [comments, setComments] = useState<CommentType[]>([]);
-  const [pagination, setPagination] = useState<PaginationPropsType>({
-    startPage: 1,
-    endPage: 1,
-    currentPage: 1,
-    totalPage: 1,
-  });
 
   const [commentContent, setCommentContent] = useState("");
 
-  const fetchComments = async (page: number) => {
-    const queryString = page > 1 ? `?page=${page}` : "";
+  // input handler
+  const commentChangeHandler = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentContent(e.target.value);
+  };
+
+  // fetch Comments
+  const fetchComments = async () => {
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/comments/${postId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("accessToken") ?? ""}`,
+      },
+    });
+
+    const json = await response.json();
+
+    if (response.ok) {
+      setComments(json.data.comments);
+    }
+  };
+
+  // create Comment
+  const createComment = async (content: string) => {
+    const comment = {
+      content,
+    };
     const response = await fetch(
-      `${process.env.REACT_APP_API_BASE_URL}/api/comments/${postId}${queryString}`,
+      `${process.env.REACT_APP_API_BASE_URL}/api/comments/create/${postId}`,
       {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken") ?? ""}`,
+        },
+        body: JSON.stringify(comment),
+      },
+    );
+
+    const json = await response.json();
+
+    if (response.ok) {
+      if (!json.result) {
+        alert("Failed to add comment");
+        return;
+      }
+      setComments([...comments, json.data.comment]);
+    }
+
+    if (!response.ok) {
+      alert(json.error);
+    }
+  };
+
+  // delete Comment
+  const deleteComment = async (commentId: string) => {
+    const response = await fetch(
+      `${process.env.REACT_APP_API_BASE_URL}/api/comments/${commentId}`,
+      {
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${sessionStorage.getItem("accessToken") ?? ""}`,
@@ -44,18 +85,24 @@ const CommentSection = (props: { postId: string }) => {
     const json = await response.json();
 
     if (response.ok) {
-      setComments(json.data.comments);
-      setPagination({
-        startPage: json.data.startPage,
-        endPage: json.data.endPage,
-        currentPage: json.data.currentPage,
-        totalPage: json.data.totalPage,
-      });
+      if (!json.result) {
+        alert("Failed to delete the comment");
+        return;
+      }
+      const newComments = comments.filter((comment) => comment._id !== commentId);
+      setComments(newComments);
+      return;
     }
   };
 
+  const onClickAddCommit = async () => {
+    console.log(111);
+    await createComment(commentContent);
+    setCommentContent("");
+  };
+
   useEffect(() => {
-    fetchComments(1);
+    fetchComments();
   }, []);
 
   return (
@@ -66,13 +113,27 @@ const CommentSection = (props: { postId: string }) => {
           return (
             <li key={`comment-${comment._id}`}>
               {comment.content} - {comment.userId}
+              {comment.isAbleModified && (
+                <StyledCommentDeleteButton
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    await deleteComment(comment._id);
+                  }}
+                >
+                  X
+                </StyledCommentDeleteButton>
+              )}
             </li>
           );
         })}
       </StyledCommentUl>
       <StyledCommentFormSection>
-        <h5>Content</h5>
+        <h5>Comment Content</h5>
+        <textarea value={commentContent} onChange={commentChangeHandler} />
       </StyledCommentFormSection>
+      <StyledCommentButton onClick={async () => onClickAddCommit()}>
+        Add a comment
+      </StyledCommentButton>
     </StyledCommentsSection>
   );
 };
@@ -88,3 +149,7 @@ const StyledCommentUl = styled.div`
 `;
 
 const StyledCommentFormSection = styled.form``;
+
+const StyledCommentButton = styled.button``;
+
+const StyledCommentDeleteButton = styled.button``;

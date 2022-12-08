@@ -1,6 +1,6 @@
 const getMyInfo = async (token: string) => {
   try {
-    const response = await fetch("http://localhost:4000/api/user/me", {
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/me`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

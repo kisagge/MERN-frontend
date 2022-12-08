@@ -29,7 +29,7 @@ const PostDetailPage = () => {
 
   // onClick handler
   const onClickDeleteButton = async () => {
-    const response = await fetch(`http://localhost:4000/api/posts/${id}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${accessToken}`,

@@ -60,7 +60,7 @@ const PostListPage = () => {
       pathname: "/post",
       search: queryString,
     });
-    const response = await fetch(`http://localhost:4000/api/posts${queryString}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts${queryString}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -102,7 +102,7 @@ const PostListPage = () => {
     }
 
     navigate(`/post${queryString}`);
-    const response = await fetch(`http://localhost:4000/api/posts${queryString}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts${queryString}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -139,12 +139,15 @@ const PostListPage = () => {
         queryString = `?${queryArray.join("&")}`;
       }
 
-      const response = await fetch(`http://localhost:4000/api/posts${queryString}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.REACT_APP_API_BASE_URL}/api/posts${queryString}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
       const json = await response.json();
 
       if (response.ok) {

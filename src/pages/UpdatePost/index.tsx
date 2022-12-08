@@ -42,7 +42,7 @@ const UpdatePostPage = () => {
       return;
     }
 
-    const response = await fetch(`http://localhost:4000/api/posts/${id}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/${id}`, {
       method: "PATCH",
       body: JSON.stringify(post),
       headers: {
@@ -75,7 +75,7 @@ const UpdatePostPage = () => {
     }
 
     const fetchPost = async () => {
-      const response = await fetch(`http://localhost:4000/api/posts/${id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/posts/${id}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("accessToken") ?? ""}`,

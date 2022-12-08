@@ -126,7 +126,6 @@ const CommentSection = (props: { postId: string }) => {
   };
 
   const onClickAddComment = async () => {
-    console.log(111);
     await createComment(commentContent);
     setCommentContent("");
   };

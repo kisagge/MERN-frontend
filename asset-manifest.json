@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/mern-basic-project/static/css/main.0a64d739.css",
+    "main.js": "/mern-basic-project/static/js/main.db01bcf5.js",
+    "index.html": "/mern-basic-project/index.html",
+    "main.0a64d739.css.map": "/mern-basic-project/static/css/main.0a64d739.css.map",
+    "main.db01bcf5.js.map": "/mern-basic-project/static/js/main.db01bcf5.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0a64d739.css",
+    "static/js/main.db01bcf5.js"
+  ]
+}

@@ -6,6 +6,7 @@ interface CommentType {
   content: string;
   isAbleModified: boolean;
   userId: string;
+  like: number;
 }
 
 const CommentSection = (props: { postId: string }) => {
@@ -95,7 +96,36 @@ const CommentSection = (props: { postId: string }) => {
     }
   };
 
-  const onClickAddCommit = async () => {
+  const likeComment = async (commentId: string) => {
+    const response = await fetch(
+      `${process.env.REACT_APP_API_BASE_URL}/api/comments/like/${commentId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken") ?? ""}`,
+        },
+      },
+    );
+
+    const json = await response.json();
+
+    if (response.ok) {
+      if (!json.result) {
+        alert("Failed to like comment");
+        return;
+      }
+      const newComments = comments.map((comment) => {
+        if (comment._id === commentId) {
+          comment.like = json.data.like;
+        }
+        return comment;
+      });
+      setComments(newComments);
+    }
+  };
+
+  const onClickAddComment = async () => {
     console.log(111);
     await createComment(commentContent);
     setCommentContent("");
@@ -111,19 +141,30 @@ const CommentSection = (props: { postId: string }) => {
       <StyledCommentUl>
         {comments.map((comment) => {
           return (
-            <li key={`comment-${comment._id}`}>
-              {comment.content} - {comment.userId}
+            <StyledCommentLi key={`comment-${comment._id}`}>
+              <span>{comment.content}</span> - <span>작성자: {comment.userId}</span> -{" "}
+              <span>좋아요: {comment.like}</span>
               {comment.isAbleModified && (
-                <StyledCommentDeleteButton
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    await deleteComment(comment._id);
-                  }}
-                >
-                  X
-                </StyledCommentDeleteButton>
+                <div>
+                  <StyledCommentLikeButton
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      await likeComment(comment._id);
+                    }}
+                  >
+                    Like
+                  </StyledCommentLikeButton>
+                  <StyledCommentDeleteButton
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      await deleteComment(comment._id);
+                    }}
+                  >
+                    X
+                  </StyledCommentDeleteButton>
+                </div>
               )}
-            </li>
+            </StyledCommentLi>
           );
         })}
       </StyledCommentUl>
@@ -131,7 +172,7 @@ const CommentSection = (props: { postId: string }) => {
         <h5>Comment Content</h5>
         <textarea value={commentContent} onChange={commentChangeHandler} />
       </StyledCommentFormSection>
-      <StyledCommentButton onClick={async () => onClickAddCommit()}>
+      <StyledCommentButton onClick={async () => onClickAddComment()}>
         Add a comment
       </StyledCommentButton>
     </StyledCommentsSection>
@@ -148,8 +189,16 @@ const StyledCommentUl = styled.div`
   list-style: none;
 `;
 
+const StyledCommentLi = styled.li`
+  div {
+    display: inline-block;
+  }
+`;
+
 const StyledCommentFormSection = styled.form``;
 
 const StyledCommentButton = styled.button``;
+
+const StyledCommentLikeButton = styled.button``;
 
 const StyledCommentDeleteButton = styled.button``;

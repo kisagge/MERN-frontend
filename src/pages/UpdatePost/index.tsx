@@ -59,7 +59,7 @@ const UpdatePostPage = () => {
 
     if (response.ok) {
       setError(null);
-      navigate("/post");
+      navigate(`/post/${id}`);
     }
   };
 

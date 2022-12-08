@@ -84,7 +84,7 @@ const PostDetailPage = () => {
           <h3>Writer</h3>
           <p>{post.userId}</p>
           <h3>Description</h3>
-          <p>{post.description}</p>
+          <p style={{ whiteSpace: "pre-line" }}>{post.description}</p>
           <h3>Created At</h3>
           <p>{post.createdAt}</p>
           <h3>Updated At</h3>

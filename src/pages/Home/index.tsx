@@ -4,6 +4,7 @@ const HomePage = () => {
   return (
     <StyledHome>
       <h2>Main Page</h2>
+      <p>MERN Basic Project입니다.</p>
     </StyledHome>
   );
 };
